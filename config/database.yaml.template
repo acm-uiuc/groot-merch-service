@@ -1,0 +1,11 @@
+development:	
+  user: root
+  password: "" 
+  hostname: localhost
+  name: groot_caffeine_service_dev
+
+test:	
+  user: root
+  password: "" 
+  hostname: localhost
+  name: groot_caffeine_service_test

@@ -1,0 +1,3 @@
+config/secrets.yaml
+config/database.yaml
+.DS_Store
