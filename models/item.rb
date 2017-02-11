@@ -11,7 +11,7 @@ class Item
 
     property :id, Serial
     property :price, Decimal
-    property :name, String
+    property :name, String, required: true
     # property :location
     property :created_on, Date
 

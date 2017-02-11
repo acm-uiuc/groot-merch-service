@@ -17,12 +17,39 @@ class User
     has n, :transactions
     has n, :items, through: :transactions
 
+    def self.validate(params, attributes)
+      attributes.each do |attr|
+        return [400, "Missing #{attr}"] unless params[attr] && !params[attr].empty?
+      end
+
+      [200, nil]
+    end
+
+    def balance
+      # TODO get balance from credits service
+      @balance || = 0
+    end
+
+    def balance=(new_balance)
+      # TODO make request to credits service to update balance
+      @balance = new_balance
+    end
+
+    def self.generate_pin
+      loop do
+        pin = Random.new.rand(10000000..99999999)
+        
+        break unless User.first(pin: pin) # break if we found a pin not given to any user
+      end
+    end
+
     def serialize
       {
         id: self.id,
         netid: self.netid,
         pin: self.pin,
-        created_on: self.created_on
+        created_on: self.created_on,
+        balance: @balance
       }
     end
 end

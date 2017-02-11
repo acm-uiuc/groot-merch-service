@@ -13,17 +13,7 @@ module Sinatra
         halt(401, Errors::VERIFY_GROOT) unless Auth.verify_request(env) || settings.unsecure
       end
 
-      app.get '/status' do
-        ResponseFormat.message("OK")
-      end
-
-      app.get '/status/corporate' do
-        halt(403, Errors::VERIFY_CORPORATE_SESSION) unless Auth.verify_corporate(env) || env['RACK_ENV'] == 'development'
-        ResponseFormat.message("OK")
-      end
-
-      app.get '/status/session' do
-        halt(403, Errors::VERIFY_CORPORATE_SESSION) unless Auth.verify_session(env) || env['RACK_ENV'] == 'development'
+      app.get '/caffeine/status' do
         ResponseFormat.message("OK")
       end
 

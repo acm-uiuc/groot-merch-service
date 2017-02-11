@@ -62,7 +62,9 @@ module Auth
     JSON.parse(response.body)["token"] == session_token
   end
 
-  def self.verify_corporate_session(request)
-    self.verify_session(request) && self.verify_corporate(request)
+  def self.verify_admin(request)
+    self.verify_credentials('admin', request) ||
+    self.verify_credentials('top4', request) ||
+    self.verify_credentials('corporate', request)
   end
 end

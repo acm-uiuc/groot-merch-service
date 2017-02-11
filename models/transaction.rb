@@ -11,7 +11,7 @@ class Transaction
 
     property :id, Serial
     property :created_on, Date
-
+    property :confirmed, Boolean, default: false
     belongs_to :user
     belongs_to :item
 
