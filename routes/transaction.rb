@@ -10,26 +10,23 @@
 module Sinatra
   module UsersRoutes
     def self.registered(app)
-      app.get '/caffeine/transactions/:netid/' do
+      app.get '/caffeine/transactions/' do
         # Return all transactions for a user, maybe allow only user or admin or something, or maybe require pin for users
-        halt(401, Errors::VERIFY_ADMIN) unless Auth.verify_admin(env) || settings.unsecure || (Auth.verify_session(env) && env['HTTP_NETID'] == params[:netid])
+        halt(401, Errors::VERIFY_ADMIN) unless (Auth.verify_session(env))
+        params = ResponseFormat.get_params(request.body.read)
+        status, error = User.validate!(params, [:pin])
 
-        user = User.first(netid: netid) || halt(404, ERRORS::USER_NOT_FOUND)
+        user = User.first(pin: params[:pin]) || halt(404, ERRORS::USER_NOT_FOUND)
         ResponseFormat.data(user.transactions)
       end
 
-      app.post '/caffeine/transactions/:netid/' do
-        netid = params[:netid]
+      app.post '/caffeine/transactions/' do
         params = ResponseFormat.get_params(request.body.read)
-        status, error = User.validate!(params, [:netid, :item_id, :pin])
+        status, error = User.validate!(params, [:item_id, :pin])
 
-        user = User.first(netid: netid) || halt(404, ERRORS::USER_NOT_FOUND)
-        user.balance
-
-        halt (400, ERRORS::INVALID_PIN) if user.pin == params[:pin]
+        user = User.first(pin: params[:pin]) || halt (404, ERRORS::INVALID_PIN)
 
         item = Item.get(params[:item_id]) || halt(404, ERRORS::ITEM_NOT_FOUND)
-
         halt (400, ERRORS::INSUFFICENT_CREDITS) if user.balance < item.price
 
         transaction = Transaction.create(
@@ -41,24 +38,21 @@ module Sinatra
         ResponseFormat.data(transaction)
       end
       
-      app.put '/caffeine/transactions/:netid/' do
-        netid = params[:netid]
+      app.put '/caffeine/transactions/' do
         params = ResponseFormat.get_params(request.body.read)
         status, error = User.validate!(params, [:item_id, :transaction_id, :pin, :confirmed])
 
-        user = User.first(netid: netid) || halt(404, ERRORS::USER_NOT_FOUND)
+        user = User.first(pin: params[:pin]) || halt (404, ERRORS::INVALID_PIN)
         item = Item.get(params[:item_id]) || halt(404, ERRORS::ITEM_NOT_FOUND)
 
         transaction = Transaction.first(
           id: params[:transaction_id],
           item_id: params[:item_id],
-          user_id: user.id
+          user_id: user.id  
         ) || halt(404, ERRORS::USER_NOT_FOUND)
 
         transaction.destroy unless confirmed
-
         transaction.update(confirmed: true)
-
         # updates in credit service
         user.balance -= item.price 
 

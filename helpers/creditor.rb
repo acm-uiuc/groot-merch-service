@@ -5,8 +5,14 @@
 # The Groot Project is open source software, released under the University of
 # Illinois/NCSA Open Source License. You should have received a copy of
 # this license in a file with the distribution.
+require 'net/http'
+require 'uri'
 
-require_relative "auth"
-require_relative "user"
-require_relative "item"
-require_relative "transaction"
+module Creditor
+  def self.get_balance(netid)
+  end
+
+  def self.update_balance(netid, new_balance)
+    
+  end
+end

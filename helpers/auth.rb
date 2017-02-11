@@ -25,7 +25,7 @@ module Auth
   end
 
   # Verifies that an admin (defined by groups service) originated this request
-  def self.verify_corporate(request)
+  def self.verify_credentials(request)
     groot_access_key = Config.load_config("groot")["access_key"]
     netid = request['HTTP_NETID']
     
