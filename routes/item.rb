@@ -10,7 +10,7 @@
 module Sinatra
   module ItemsRoutes
     def self.registered(app)
-      app.get '/caffeine/items' do
+      app.get '/merch/items' do
         ResponseFormat.data(Item.all)
       end
     end

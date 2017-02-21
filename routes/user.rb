@@ -10,27 +10,24 @@
 module Sinatra
   module UsersRoutes
     def self.registered(app)
-      app.get '/caffeine/users' do
+      app.get '/merch/users' do
         # Return all users w/ pins, admin only route
-        halt(401, Errors::VERIFY_ADMIN) unless Auth.verify_admin(env) || settings.unsecure
+        halt(401, Errors::VERIFY_ADMIN) unless Auth.verify_admin(env) || GrootCaffeineService.unsecure
 
         ResponseFormat.data(User.all)
       end
       
-      app.post '/caffeine/users' do
+      app.get '/merch/users/:netid' do
         # find or create user by their netid, initialize and create pin
-        params = ResponseFormat.get_params(request.body.read)
-        status, error = User.validate!(params, [:netid])
+        status, error = User.validate(params, [:netid])
         halt status, error if error
 
-        user = User.find_or_create(
-          {
-            netid: params[:netid]
-          },
-          {
-            pin: User.generate_pin
-          }
-        )
+        user = User.first_or_new({netid: params[:netid]})
+        unless user.pin
+          user.pin = User.generate_pin
+          user.save
+        end
+
         user.balance
 
         ResponseFormat.data(user)

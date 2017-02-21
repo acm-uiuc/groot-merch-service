@@ -7,12 +7,42 @@
 # this license in a file with the distribution.
 require 'net/http'
 require 'uri'
+require 'pry'
 
 module Creditor
+  SERVICES_URL = 'http://localhost:8000'
+  CREDITS_URL = "/credits/users/"
+  CREATE_TRANSACTION = "/credits/transaction/"
+
   def self.get_balance(netid)
+    groot_access_key = Config.load_config("groot")["access_key"]
+    
+    uri = URI.parse("#{SERVICES_URL}#{CREDITS_URL}#{netid}")
+    http = Net::HTTP.new(uri.host, uri.port)
+    request = Net::HTTP::Get.new(uri.request_uri)
+    request['Authorization'] = groot_access_key
+    
+    response = http.request(request)
+
+    return 0 unless response.code == "200"
+    JSON.parse(response.body)["balance"]
   end
 
-  def self.update_balance(netid, new_balance)
+  def self.update_balance(netid, new_diff, description)
+    groot_access_key = Config.load_config("groot")["access_key"]
+
+    uri = URI.parse("#{SERVICES_URL}#{CREATE_TRANSACTION}")
+    http = Net::HTTP.new(uri.host, uri.port)
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request['Authorization'] = groot_access_key
+    request.body = {
+      netid: netid,
+      new_balance: new_diff,
+      description: description
+    }
     
+    response = http.request(request)
+    
+    response.code == "200"
   end
 end

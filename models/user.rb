@@ -26,20 +26,22 @@ class User
     end
 
     def balance
-      # TODO get balance from credits service
-      @balance || = 0
+      unless @balance
+        @balance = Creditor.get_balance(self.netid)
+      end
+      
+      @balance
     end
 
-    def balance=(new_balance)
-      # TODO make request to credits service to update balance
-      @balance = new_balance
+    def balance=(new_balance, description = "")
+      successful = Creditor.update_balance(self.netid, new_balance - @balance, description)
+      @balance = new_balance if successful
     end
 
     def self.generate_pin
       loop do
         pin = Random.new.rand(10000000..99999999)
-        
-        break unless User.first(pin: pin) # break if we found a pin not given to any user
+        return pin unless User.first(pin: pin) # break if we found a pin not given to any user
       end
     end
 

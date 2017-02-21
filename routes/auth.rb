@@ -9,11 +9,9 @@
 module Sinatra
   module AuthsRoutes
     def self.registered(app)
-      app.before do
-        halt(401, Errors::VERIFY_GROOT) unless Auth.verify_request(env) || settings.unsecure
-      end
+      app.set port: 9291
 
-      app.get '/caffeine/status' do
+      app.get '/merch/status' do
         ResponseFormat.message("OK")
       end
 

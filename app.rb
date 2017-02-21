@@ -28,15 +28,13 @@ require_relative 'models/init'
 class GrootCaffeineService < Sinatra::Base
     register Sinatra::AuthsRoutes
     register Sinatra::UsersRoutes
+    register Sinatra::TransactionsRoutes
     register Sinatra::ItemsRoutes
     register Sinatra::CrossOrigin
-
-    set port: 9291
 
     configure do
       enable :cross_origin
       enable :logging
-
     end
 
     configure :development do
@@ -66,7 +64,8 @@ class GrootCaffeineService < Sinatra::Base
     end
 
     configure :production do
-
+        disable :unsecure
+        
         db = Config.load_db("production")
         DataMapper.setup(
             :default,

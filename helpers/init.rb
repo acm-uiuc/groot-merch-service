@@ -8,6 +8,7 @@
 # encoding: utf-8
 
 require_relative 'auth'
+require_relative 'creditor'
 require_relative 'config'
 require_relative 'errors'
 require_relative 'response_format'

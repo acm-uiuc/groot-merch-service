@@ -8,26 +8,16 @@
 # encoding: UTF-8
 
 module Sinatra
-  module UsersRoutes
+  module TransactionsRoutes
     def self.registered(app)
-      app.get '/caffeine/transactions/' do
-        # Return all transactions for a user, maybe allow only user or admin or something, or maybe require pin for users
-        halt(401, Errors::VERIFY_ADMIN) unless (Auth.verify_session(env))
+      app.post '/merch/transactions/' do
         params = ResponseFormat.get_params(request.body.read)
-        status, error = User.validate!(params, [:pin])
-
-        user = User.first(pin: params[:pin]) || halt(404, ERRORS::USER_NOT_FOUND)
-        ResponseFormat.data(user.transactions)
-      end
-
-      app.post '/caffeine/transactions/' do
-        params = ResponseFormat.get_params(request.body.read)
-        status, error = User.validate!(params, [:item_id, :pin])
-
-        user = User.first(pin: params[:pin]) || halt (404, ERRORS::INVALID_PIN)
-
+        status, error = User.validate(params, [:item_id, :pin])
+        halt status, error if error
+        
+        user = User.first(pin: params[:pin]) || halt(404, ERRORS::INVALID_PIN)
         item = Item.get(params[:item_id]) || halt(404, ERRORS::ITEM_NOT_FOUND)
-        halt (400, ERRORS::INSUFFICENT_CREDITS) if user.balance < item.price
+        halt(400, ERRORS::INSUFFICENT_CREDITS) if user.balance < item.price
 
         transaction = Transaction.create(
           user_id: user.id,
@@ -38,11 +28,11 @@ module Sinatra
         ResponseFormat.data(transaction)
       end
       
-      app.put '/caffeine/transactions/' do
+      app.put '/merch/transactions/:pin' do
         params = ResponseFormat.get_params(request.body.read)
-        status, error = User.validate!(params, [:item_id, :transaction_id, :pin, :confirmed])
+        status, error = User.validate(params, [:item_id, :transaction_id, :pin, :confirmed])
 
-        user = User.first(pin: params[:pin]) || halt (404, ERRORS::INVALID_PIN)
+        user = User.first(pin: params[:pin]) || halt(404, ERRORS::INVALID_PIN)
         item = Item.get(params[:item_id]) || halt(404, ERRORS::ITEM_NOT_FOUND)
 
         transaction = Transaction.first(
@@ -53,13 +43,14 @@ module Sinatra
 
         transaction.destroy unless confirmed
         transaction.update(confirmed: true)
-        # updates in credit service
-        user.balance -= item.price 
+        
+        # updates in credit service, TODO add description
+        user.balance -= item.price
 
         ResponseFormat.data(user)
       end
     end
   end
 
-  register UsersRoutes
+  register TransactionsRoutes
 end
