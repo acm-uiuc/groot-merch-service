@@ -12,17 +12,29 @@ class Item
     property :id, Serial
     property :price, Decimal
     property :name, String, required: true
-    # property :location
+    property :image, Text
+    property :quantity, Integer
+    # property :location, 
     property :created_on, Date
 
     has n, :transactions
     has n, :users, through: :transactions
+
+    def self.validate(params, attributes)
+      attributes.each do |attr|
+        return [400, "Missing #{attr}"] unless params[attr] && !params[attr].empty?
+      end
+
+      [200, nil]
+    end
 
     def serialize
       {
         id: self.id,
         price: self.price,
         name: self.name,
+        image: self.image,
+        quantity: self.quantity,
         created_on: self.created_on
       }
     end
