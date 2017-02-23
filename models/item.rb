@@ -10,7 +10,7 @@ class Item
     include DataMapper::Resource
 
     property :id, Serial
-    property :price, Decimal
+    property :price, Float
     property :name, String, required: true
     property :image, Text
     property :quantity, Integer
@@ -31,7 +31,7 @@ class Item
     def serialize
       {
         id: self.id,
-        price: self.price,
+        price: self.price.to_s,
         name: self.name,
         image: self.image,
         quantity: self.quantity,

@@ -20,14 +20,13 @@ module Sinatra
       app.get '/merch/users/:netid' do
         # find or create user by their netid, initialize and create pin
         status, error = User.validate(params, [:netid])
-        halt status, error if error
+        halt status, ResponseFormat.error(error) if error
 
         user = User.first_or_new({netid: params[:netid]})
         unless user.pin
           user.pin = User.generate_pin
           user.save
         end
-
         user.balance
 
         ResponseFormat.data(user)
