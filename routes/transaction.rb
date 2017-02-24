@@ -12,40 +12,45 @@ module Sinatra
     def self.registered(app)
       app.post '/merch/transactions/' do
         params = ResponseFormat.get_params(request.body.read)
-        status, error = User.validate(params, [:item_id, :pin])
-        halt status, error if error
+        status, error = User.validate(params, [:item_id, :pin, :quantity])
+        halt status, ResponseFormat.error(error) if error
         
-        user = User.first(pin: params[:pin]) || halt(404, ERRORS::INVALID_PIN)
-        item = Item.get(params[:item_id]) || halt(404, ERRORS::ITEM_NOT_FOUND)
-        halt(400, ERRORS::INSUFFICENT_CREDITS) if user.balance < item.price
+        user = User.first(pin: params[:pin]) || halt(404, Errors::INVALID_PIN)
+        item = Item.get(params[:item_id]) || halt(404, Errors::ITEM_NOT_FOUND)
+        halt(400, Errors::INSUFFICENT_CREDITS) if user.balance < item.price
+        halt(400, Errors::INSUFFICIENT_QUANTITY) if item.quantity < params[:quantity].to_i
 
         transaction = Transaction.create(
           user_id: user.id,
           item_id: item.id,
+          quantity: params[:quantity].to_i,
           confirmed: false
         )
 
         ResponseFormat.data(transaction)
       end
       
-      app.put '/merch/transactions/:pin' do
+      app.put '/merch/transactions/' do
         params = ResponseFormat.get_params(request.body.read)
-        status, error = User.validate(params, [:item_id, :transaction_id, :pin, :confirmed])
+        # Must also send a confirmed value
+        status, error = User.validate(params, [:item_id, :transaction_id, :pin, :quantity]) 
 
-        user = User.first(pin: params[:pin]) || halt(404, ERRORS::INVALID_PIN)
-        item = Item.get(params[:item_id]) || halt(404, ERRORS::ITEM_NOT_FOUND)
+        user = User.first(pin: params[:pin]) || halt(404, Errors::INVALID_PIN)
+        item = Item.get(params[:item_id]) || halt(404, Errors::ITEM_NOT_FOUND)
 
         transaction = Transaction.first(
           id: params[:transaction_id],
           item_id: params[:item_id],
           user_id: user.id  
-        ) || halt(404, ERRORS::USER_NOT_FOUND)
+        ) || halt(404, Errors::USER_NOT_FOUND)
 
-        transaction.destroy unless confirmed
-        transaction.update(confirmed: true)
-        
+        transaction.destroy unless params[:confirmed] == "true" # because it is a string in the JSON request
+        item.update(quantity: item.quantity - params[:quantity].to_i)
+
         # updates in credit service, TODO add description
         user.balance -= item.price
+
+        transaction.update(confirmed: true)
 
         ResponseFormat.data(user)
       end

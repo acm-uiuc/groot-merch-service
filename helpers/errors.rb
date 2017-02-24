@@ -6,4 +6,5 @@ module Errors
   USER_NOT_FOUND = ResponseFormat.error "User not found"
   ITEM_NOT_FOUND = ResponseFormat.error "Item not found"
   INSUFFICENT_CREDITS = ResponseFormat.error "User does not have sufficient credits"
+  INSUFFICIENT_QUANTITY = ResponseFormat.error "Item does not have sufficient quantity"
 end

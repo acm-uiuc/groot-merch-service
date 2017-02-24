@@ -10,7 +10,7 @@ class User
     include DataMapper::Resource
 
     property :id, Serial
-    property :netid, String, required: true, key: true, unique_index: true, length: 1...9
+    property :netid, String, required: true, unique_index: true, length: 1...9
     property :pin, Integer, min: 10000000, max: 99999999, unique: true, required: true
     property :created_on, Date
 

@@ -12,7 +12,7 @@ require 'pry'
 module Creditor
   SERVICES_URL = 'http://localhost:8000'
   CREDITS_URL = "/credits/users/"
-  CREATE_TRANSACTION = "/credits/transaction/"
+  CREATE_TRANSACTION = "/credits/transactions"
 
   def self.get_balance(netid)
     groot_access_key = Config.load_config("groot")["access_key"]
@@ -37,12 +37,12 @@ module Creditor
     request['Authorization'] = groot_access_key
     request.body = {
       netid: netid,
-      new_balance: new_diff,
+      amount: new_diff,
       description: description
-    }
+    }.to_json
     
     response = http.request(request)
-    
+    binding.pry
     response.code == "200"
   end
 end

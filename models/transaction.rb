@@ -12,6 +12,7 @@ class Transaction
     property :id, Serial
     property :created_on, Date
     property :confirmed, Boolean, default: false
+    property :quantity, Integer
     belongs_to :user
     belongs_to :item
 
@@ -20,6 +21,7 @@ class Transaction
         id: self.id,
         user: self.user,
         item: self.item,
+        quantity: self.quantity,
         created_on: self.created_on
       }
     end
