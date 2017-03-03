@@ -33,7 +33,7 @@ class User
       @balance
     end
 
-    def balance=(new_balance, description = "")
+    def balance=(new_balance, description = "Merch Transaction")
       successful = Creditor.update_balance(self.netid, new_balance - @balance, description)
       @balance = new_balance if successful
     end

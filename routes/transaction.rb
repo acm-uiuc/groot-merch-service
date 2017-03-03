@@ -48,7 +48,13 @@ module Sinatra
         item.update(quantity: item.quantity - params[:quantity].to_i)
 
         # updates in credit service, TODO add description
+        old_balance = user.balance
         user.balance -= item.price
+        if user.balance == old_balance # transaction failed
+          transaction.destroy
+
+          halt 500, ResponseFormat.error("Error updating credits balance.")
+        end
 
         transaction.update(confirmed: true)
 

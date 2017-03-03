@@ -35,6 +35,8 @@ module Creditor
     http = Net::HTTP.new(uri.host, uri.port)
     request = Net::HTTP::Post.new(uri.request_uri)
     request['Authorization'] = groot_access_key
+    request['Accept'] = 'application/json'
+    request['Content-Type'] = 'application/json'
     request.body = {
       netid: netid,
       amount: new_diff,
@@ -42,7 +44,6 @@ module Creditor
     }.to_json
     
     response = http.request(request)
-    binding.pry
     response.code == "200"
   end
 end
