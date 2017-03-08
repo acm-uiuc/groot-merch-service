@@ -12,7 +12,7 @@ module Sinatra
     def self.registered(app)
       app.get '/merch/users' do
         # Return all users w/ pins, admin only route
-        halt(401, Errors::VERIFY_ADMIN) unless Auth.verify_admin(env) || GrootCaffeineService.unsecure
+        halt(401, Errors::VERIFY_ADMIN) unless Auth.verify_admin(env) || GrootMerchService.unsecure
 
         ResponseFormat.data(User.all)
       end

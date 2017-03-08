@@ -10,7 +10,7 @@
 module Sinatra
   module ItemsRoutes
     def self.registered(app)
-      app.get '/merch/items/' do
+      app.get '/merch/items' do
         ResponseFormat.data(Item.all)
       end
 
@@ -19,8 +19,7 @@ module Sinatra
         ResponseFormat.data(item)
       end
 
-      app.post '/merch/items/' do
-        puts "I am here"
+      app.post '/merch/items' do
         params = ResponseFormat.get_params(request.body.read)
         status, error = Item.validate(params, [:name, :price, :image_url, :quantity])
         halt status, ResponseFormat.error(error) if error

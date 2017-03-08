@@ -14,12 +14,17 @@ class User
     property :pin, Integer, min: 10000000, max: 99999999, unique: true, required: true
     property :created_on, Date
 
-    has n, :transactions
+    has n, :transactions, constraint: :destroy
     has n, :items, through: :transactions
 
     def self.validate(params, attributes)
       attributes.each do |attr|
         return [400, "Missing #{attr}"] unless params[attr] && !params[attr].empty?
+        
+        case attr
+        when :quantity
+          return [400, "Invalid quanity"] unless params[:quantity].to_i > 0
+        end
       end
 
       [200, nil]
@@ -33,7 +38,7 @@ class User
       @balance
     end
 
-    def balance=(new_balance, description = "Merch Transaction")
+    def set_balance(new_balance, description = "Merch Transaction")
       successful = Creditor.update_balance(self.netid, new_balance - @balance, description)
       @balance = new_balance if successful
     end

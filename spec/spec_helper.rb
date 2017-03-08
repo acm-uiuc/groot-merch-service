@@ -14,7 +14,7 @@ require 'database_cleaner'
 require_relative '../app'
 
 def app
-  GrootCaffeineService
+  GrootMerchService
 end
 
 module TestHelpers

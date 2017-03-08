@@ -25,7 +25,7 @@ require_relative 'helpers/init'
 require_relative 'routes/init'
 require_relative 'models/init'
 
-class GrootCaffeineService < Sinatra::Base
+class GrootMerchService < Sinatra::Base
     register Sinatra::AuthsRoutes
     register Sinatra::UsersRoutes
     register Sinatra::TransactionsRoutes

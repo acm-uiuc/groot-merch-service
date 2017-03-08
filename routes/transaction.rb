@@ -10,7 +10,7 @@
 module Sinatra
   module TransactionsRoutes
     def self.registered(app)
-      app.post '/merch/transactions/' do
+      app.post '/merch/transactions' do
         params = ResponseFormat.get_params(request.body.read)
         status, error = User.validate(params, [:item_id, :pin, :quantity])
         halt status, ResponseFormat.error(error) if error
@@ -30,10 +30,10 @@ module Sinatra
         ResponseFormat.data(transaction)
       end
       
-      app.put '/merch/transactions/' do
+      app.put '/merch/transactions' do
         params = ResponseFormat.get_params(request.body.read)
-        # Must also send a confirmed value
-        status, error = User.validate(params, [:item_id, :transaction_id, :pin, :quantity]) 
+        
+        status, error = User.validate(params, [:item_id, :transaction_id, :pin, :quantity, :confirmed])
 
         user = User.first(pin: params[:pin]) || halt(404, Errors::INVALID_PIN)
         item = Item.get(params[:item_id]) || halt(404, Errors::ITEM_NOT_FOUND)
@@ -47,9 +47,10 @@ module Sinatra
         transaction.destroy unless params[:confirmed] == "true" # because it is a string in the JSON request
         item.update(quantity: item.quantity - params[:quantity].to_i)
 
-        # updates in credit service, TODO add description
         old_balance = user.balance
-        user.balance -= item.price
+        new_balance = user.balance - item.price * params[:quantity].to_i
+
+        user.set_balance(new_balance, "Purchased #{params[:quantity]} #{item.name}")
         if user.balance == old_balance # transaction failed
           transaction.destroy
 

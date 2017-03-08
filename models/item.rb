@@ -17,7 +17,7 @@ class Item
     # property :location, 
     property :created_on, Date
 
-    has n, :transactions
+    has n, :transactions, constraint: :destroy
     has n, :users, through: :transactions
 
     def self.validate(params, attributes)

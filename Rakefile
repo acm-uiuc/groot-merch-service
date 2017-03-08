@@ -49,7 +49,7 @@ end
 namespace :routes do
     desc 'Print all the routes'
     task :show do
-        GrootCaffeineService::routes.each_pair do |method, list|
+        GrootMerchService::routes.each_pair do |method, list|
             puts ":: #{method} ::"
             routes = []
             list.each do |item|
