@@ -9,7 +9,7 @@
 module Sinatra
   module AuthsRoutes
     def self.registered(app)
-      app.set port: 9291
+      app.set port: 6969
 
       app.get '/merch/status' do
         ResponseFormat.message("OK")
