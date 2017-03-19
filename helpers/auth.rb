@@ -25,11 +25,11 @@ module Auth
   end
 
   # Verifies that an admin (defined by groups service) originated this request
-  def self.verify_credentials(request)
+  def self.verify_credentials(group, request)
     groot_access_key = Config.load_config("groot")["access_key"]
     netid = request['HTTP_NETID']
     
-    uri = URI.parse("#{SERVICES_URL}#{VERIFY_CORPORATE_URL}#{netid}")
+    uri = URI.parse("#{SERVICES_URL}/groups/commitees/#{group}?isMember=#{netid}")
     http = Net::HTTP.new(uri.host, uri.port)
     request = Net::HTTP::Get.new(uri.request_uri)
     request['Authorization'] = groot_access_key
