@@ -14,4 +14,5 @@ module Errors
   ITEM_NOT_FOUND = ResponseFormat.error "Item not found"
   INSUFFICENT_CREDITS = ResponseFormat.error "User does not have sufficient credits"
   INSUFFICIENT_QUANTITY = ResponseFormat.error "Item does not have sufficient quantity"
+  INVALID_PIN = ResponseFormat.error "No such user exists with that pin"
 end

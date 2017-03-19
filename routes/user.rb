@@ -12,9 +12,15 @@ module Sinatra
     def self.registered(app)
       app.get '/merch/users' do
         # Return all users w/ pins, admin only route
-        halt(401, Errors::VERIFY_ADMIN) unless Auth.verify_admin(env) || GrootMerchService.unsecure
+        halt(401, ERRORS::VERIFY_ADMIN) unless Auth.verify_admin(env) || GrootMerchService.unsecure
 
         ResponseFormat.data(User.all)
+      end
+
+      app.get '/merch/users/pins/:pin' do
+        user = User.first(pin: params[:pin]) || halt(404, ERRORS::INVALID_PIN)
+        user.balance # fetch balance
+        ResponseFormat.data(user)
       end
       
       app.get '/merch/users/:netid' do

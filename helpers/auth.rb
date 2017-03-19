@@ -29,7 +29,7 @@ module Auth
     groot_access_key = Config.load_config("groot")["access_key"]
     netid = request['HTTP_NETID']
     
-    uri = URI.parse("#{SERVICES_URL}/groups/commitees/#{group}?isMember=#{netid}")
+    uri = URI.parse("#{SERVICES_URL}/groups/committees/#{group}?isMember=#{netid}")
     http = Net::HTTP.new(uri.host, uri.port)
     request = Net::HTTP::Get.new(uri.request_uri)
     request['Authorization'] = groot_access_key
