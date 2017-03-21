@@ -22,11 +22,12 @@ class User
         return [400, "Missing #{attr}"] unless params[attr] && !params[attr].empty?
         
         case attr
-        when :quantity
-          return [400, "Invalid quanity"] unless params[:quantity].to_i > 0
+          when :quantity
+            return [400, "Invalid quanity"] unless params[:quantity].to_i > 0
+          when :netid
+            return [404, "User netid was not found in users service"] unless Auth.verify_netid(params[:netid])
         end
       end
-
       [200, nil]
     end
 

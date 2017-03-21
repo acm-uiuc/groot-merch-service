@@ -58,8 +58,19 @@ module Auth
     request['Content-Type'] = 'application/json'
     response = http.request(request)
     
-    return false unless response.code == "200"
-    JSON.parse(response.body)["token"] == session_token
+    response.code == "200" && JSON.parse(response.body)["token"] == session_token
+  end
+
+  def self.verify_netid(netid)
+    groot_access_key = Config.load_config("groot")["access_key"]
+
+    uri = URI.parse("#{SERVICES_URL}/users/#{netid}/is_member")
+    http = Net::HTTP.new(uri.host, uri.port)
+    request = Net::HTTP::Get.new(uri.request_uri)
+    request['Authorization'] = groot_access_key
+    response = http.request(request)
+
+    response.code == "200" && !JSON.parse(response.body)['error'] && JSON.parse(response.body)['data']['is_member']
   end
 
   def self.verify_admin(request)
