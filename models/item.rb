@@ -16,8 +16,7 @@ class Item
     property :quantity, Integer
     property :created_on, Date
 
-    has n, :transactions, constraint: :destroy
-    has n, :users, through: :transactions
+    has n, :items, through: Resource
 
     def self.validate(params, attributes)
       attributes.each do |attr|

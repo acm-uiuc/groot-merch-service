@@ -12,15 +12,15 @@ class Transaction
     property :id, Serial
     property :created_on, Date
     property :confirmed, Boolean, default: false
-    property :quantities, Integer
-    property :items, Integer
+    
     belongs_to :user
+    has n, :items, through: Resource
 
     def serialize
       {
         id: self.id,
-        user: self.user,
-        quantity: self.quantity,
+        user: self.user.serialize,
+        items: self.items.map(&:serialize),
         created_on: self.created_on
       }
     end

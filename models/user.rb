@@ -15,7 +15,6 @@ class User
     property :created_on, Date
 
     has n, :transactions, constraint: :destroy
-    has n, :items, through: :transactions
 
     def self.validate(params, attributes)
       attributes.each do |attr|
@@ -24,8 +23,6 @@ class User
         case attr
           when :items
             return [400, "Items should be specified in an array"] unless params[attr].kind_of?(Array)
-          when :quantities
-            return [400, "Quantities should be positive integers in an array"] unless params[attr].kind_of?(Array) && params[attr].all? { |e| e.to_i > 0}
           when :netid
             return [404, "User netid was not found in users service"] unless Auth.verify_netid(params[:netid])
         end
