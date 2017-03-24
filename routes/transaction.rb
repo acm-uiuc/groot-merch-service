@@ -55,7 +55,7 @@ module Sinatra
         transaction = Transaction.first(
           id: params[:transaction_id],
           items: params[:items],
-          quantities: params[:quantities]
+          quantities: params[:quantities],
           user_id: user.id
         ) || halt(404, Errors::USER_NOT_FOUND)
         transaction.destroy unless params[:confirmed]

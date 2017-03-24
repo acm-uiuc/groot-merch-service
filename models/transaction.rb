@@ -13,6 +13,7 @@ class Transaction
     property :created_on, Date
     property :confirmed, Boolean, default: false
     property :quantities, Integer
+    property :items, Integer
     belongs_to :user
 
     def serialize
