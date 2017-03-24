@@ -23,9 +23,9 @@ class User
         
         case attr
           when :item_id
-            return [400, "Item ids should be specified as an array"] unless params[:item_id].kind_of?(Array)
+            return [400, "Items should be specified in an array"] unless params[:item_id].kind_of?(Array)
           when :quantity
-            return [400, "Invalid quantity"] unless params[:quantity].kind_of?(Array) && params[:quantity].all? { |e| e.to_i > 0}
+            return [400, "Quantities should be positive integers in an array"] unless params[:quantity].kind_of?(Array) && params[:quantity].all? { |e| e.to_i > 0}
           when :netid
             return [404, "User netid was not found in users service"] unless Auth.verify_netid(params[:netid])
         end

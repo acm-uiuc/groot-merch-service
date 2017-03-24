@@ -12,15 +12,13 @@ class Transaction
     property :id, Serial
     property :created_on, Date
     property :confirmed, Boolean, default: false
-    property :quantity, Integer
+    property :quantities, Integer
     belongs_to :user
-    belongs_to :item
 
     def serialize
       {
         id: self.id,
         user: self.user,
-        item: self.item,
         quantity: self.quantity,
         created_on: self.created_on
       }
