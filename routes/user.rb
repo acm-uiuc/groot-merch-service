@@ -12,7 +12,7 @@ module Sinatra
     def self.registered(app)
       app.get '/merch/users' do
         # Return all users w/ pins, admin only route
-        halt(401, ERRORS::VERIFY_ADMIN) unless Auth.verify_admin(env) || GrootMerchService.unsecure
+        halt(401, Errors::VERIFY_ADMIN) unless Auth.verify_admin(env) || GrootMerchService.unsecure
 
         ResponseFormat.data(User.all)
       end
@@ -39,7 +39,7 @@ module Sinatra
       end
 
       app.get '/merch/users/pins/:pin' do
-        user = User.first(pin: params[:pin]) || halt(404, ERRORS::INVALID_PIN)
+        user = User.first(pin: params[:pin]) || halt(404, Errors::INVALID_PIN)
         begin
           user.balance
         rescue
