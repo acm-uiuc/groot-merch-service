@@ -18,29 +18,20 @@ Questions on how to add your app to Groot or use the Groot API:
 # Routes
 ```
 :: GET ::
-/merch/items/
+/merch/items
 /merch/items/:id
 /merch/status
 /merch/users
 /merch/users/:netid
-
-:: HEAD ::
-/merch/items/
-/merch/items/:id
-/merch/status
-/merch/users
-/merch/users/:netid
-
-:: OPTIONS ::
-:splat
+/merch/users/pins/:pin
 
 :: POST ::
-/merch/items/
-/merch/transactions/
+/merch/items
+/merch/transactions
 
 :: PUT ::
 /merch/items/:id
-/merch/transactions/
+/merch/transactions
 
 :: DELETE ::
 /merch/items/:id
