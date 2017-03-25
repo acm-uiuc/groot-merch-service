@@ -56,7 +56,7 @@ class User
         netid: self.netid,
         pin: self.pin,
         created_on: self.created_on,
-        balance: @balance
+        balance: self.balance
       }
     end
 end
