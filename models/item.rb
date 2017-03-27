@@ -16,7 +16,7 @@ class Item
     property :created_on, Date
 
     has n, :transactions, through: Resource, constraint: :destroy
-    has n, :locations, constraint: :destroy
+    has n, :locations, constraint: :skip
 
     def self.validate(params, attributes)
       attributes.each do |attr|

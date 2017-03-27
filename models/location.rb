@@ -11,10 +11,19 @@ class Location
     property :id, Serial
 
     property :row, String, required: true, length: 1
-    property :column, Integer, required: true, max: 99
-    property :quantity, Integer, required: true
+    property :column, Integer, required: true, min: 1, max: 9
+    property :quantity, Integer, required: false, default: 0
+    belongs_to :item, required: false
 
-    belongs_to :item
+    validates_with_method :row, method: :correct_row?
+
+    def correct_row?
+      if ("A".."E").to_a.include? @row
+        return true
+      else
+        return [false, "row must be a valid string in the interval A - E"]
+      end
+    end
 
     def self.validate(params, attributes)
       attributes.each do |attr|
@@ -25,11 +34,13 @@ class Location
     end
     
     def serialize
+      item_json = (self.item.nil?) ? {} : self.item.serialize
       {
         row: self.row,
         column: self.column,
         location: "#{self.row}#{self.column}",
-        quantity: self.quantity
+        quantity: self.quantity,
+        item: item_json
       }
     end
 end
