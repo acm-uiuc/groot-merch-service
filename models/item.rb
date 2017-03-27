@@ -34,6 +34,18 @@ class Item
        self.total_stock != 0
     end
 
+    def vend
+      return false unless self.in_stock
+      # find first location that has some quantity available
+      location = item.locations.detect {|l| l.quantity > 0 }
+
+      # Make request to Pi TODO help
+
+      # If successful
+      location.quantity -= 1
+      location.save
+    end
+
     def serialize
       {
         id: self.id,
