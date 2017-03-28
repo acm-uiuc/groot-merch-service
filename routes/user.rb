@@ -38,7 +38,7 @@ module Sinatra
         end
       end
 
-      app.get '/merch/users/pins' do
+      app.post '/merch/users/pins' do
         params = ResponseFormat.get_params(request.body.read)
         status, error = User.validate(params, [:pin])
         halt status, ResponseFormat.error(error) if error
