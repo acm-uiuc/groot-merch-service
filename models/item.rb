@@ -43,7 +43,7 @@ class Item
       ip_address = Config.load_config("merch_pi")["ip_address"]
 
       # Make request to pi
-      uri = URI.parse("http://#{ip_address}/vend?item=#{location.pretty_location}")
+      uri = URI.parse("http://#{ip_address}:5000/vend?item=#{location.pretty_location}")
       http = Net::HTTP.new(uri.host, uri.port)
       request = Net::HTTP::Post.new(uri.request_uri)
       request['TOKEN'] = merch_access_key
