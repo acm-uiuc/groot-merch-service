@@ -37,7 +37,7 @@ class Item
     def vend
       return false unless self.in_stock
       # find first location that has some quantity available
-      location = item.locations.detect {|l| l.quantity > 0 }
+      location = self.locations.detect {|l| l.quantity > 0 }
 
       # Make request to Pi TODO help
 

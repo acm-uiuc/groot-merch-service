@@ -39,7 +39,8 @@ module Sinatra
           items: items
         )
         
-        user.set_balance(new_balance, "Merch Transaction: #{items.map(&:name).join(", ")}")
+        old_balance = user.balance
+        user.set_balance(user.balance - total_credits_needed, "Merch Transaction: #{items.map(&:name).join(", ")}")
         if user.balance == old_balance # transaction failed
           transaction.destroy
           halt 500, Errors::BALANCE_ERROR
