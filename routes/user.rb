@@ -38,7 +38,11 @@ module Sinatra
         end
       end
 
-      app.get '/merch/users/pins/:pin' do
+      app.get '/merch/users/pins' do
+        params = ResponseFormat.get_params(request.body.read)
+        status, error = User.validate(params, [:pin])
+        halt status, ResponseFormat.error(error) if error
+
         user = User.first(pin: params[:pin]) || halt(404, Errors::INVALID_PIN)
         begin
           user.balance
