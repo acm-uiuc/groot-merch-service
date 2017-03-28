@@ -6,6 +6,7 @@
 # Illinois/NCSA Open Source License. You should have received a copy of
 # this license in a file with the distribution.
 
-require_relative "user"
 require_relative "item"
+require_relative "location"
 require_relative "transaction"
+require_relative "user"

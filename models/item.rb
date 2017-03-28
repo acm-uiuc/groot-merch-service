@@ -13,10 +13,10 @@ class Item
     property :price, Integer
     property :name, String, required: true
     property :image, Text
-    property :quantity, Integer
     property :created_on, Date
 
-    has n, :items, through: Resource
+    has n, :transactions, through: Resource, constraint: :destroy
+    has n, :locations, constraint: :skip
 
     def self.validate(params, attributes)
       attributes.each do |attr|
@@ -61,8 +61,10 @@ class Item
         price: self.price,
         name: self.name,
         image: self.image,
-        quantity: self.quantity,
-        created_on: self.created_on
+        created_on: self.created_on,
+        vending: self.locations.map(&:serialize),
+        in_stock: self.in_stock,
+        total_stock: self.total_stock
       }
     end
 end

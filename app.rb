@@ -30,6 +30,7 @@ class GrootMerchService < Sinatra::Base
     register Sinatra::UsersRoutes
     register Sinatra::TransactionsRoutes
     register Sinatra::ItemsRoutes
+    register Sinatra::LocationsRoutes
     register Sinatra::CrossOrigin
 
     configure do

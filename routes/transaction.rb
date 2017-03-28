@@ -25,54 +25,35 @@ module Sinatra
         items = params[:items].collect { |e| Item.get(e) }
         halt(404, Errors::ITEM_NOT_FOUND) if items.any? { |x| x.nil? }
 
-        halt(400, ResponseFormat.error("Item #{item.name} has #{item.quantity} left according to our database. Please ask someone to refill this item.")) if items.map(&:quantity).any? { |e| e < 0 }
+        items.each do |item|
+          unless item.in_stock
+            halt(400, ResponseFormat.error("#{item.name} is out of stock. Please ask someone to refill this item."))
+          end
+        end
 
         total_credits_needed = items.map(&:price).inject(0, &:+)
         halt(400, Errors::INSUFFICENT_CREDITS) if user.balance < total_credits_needed
 
         transaction = Transaction.create(
           user_id: user.id,
-          items: items,
-          confirmed: false
+          items: items
         )
-        ResponseFormat.data(transaction)
-      end
-      
-      app.put '/merch/transactions' do
-        params = ResponseFormat.get_params(request.body.read)
-        
-        status, error = User.validate(params, [:transaction_id, :pin, :confirmed])
-        user = User.first(pin: params[:pin]) || halt(404, Errors::INVALID_PIN)
-
-        begin
-          user.balance
-        rescue
-          halt 500, Errors::BALANCE_ERROR
-        end
-
-        transaction = Transaction.first(
-          id: params[:transaction_id],
-          user_id: user.id
-        ) || halt(404, Errors::USER_NOT_FOUND)
-        transaction.destroy unless params[:confirmed]
-        items = transaction.items
         
         old_balance = user.balance
-        total_credits_needed = items.map(&:price).inject(0, &:+)
-        new_balance = user.balance - total_credits_needed
-
-        user.set_balance(new_balance, "Merch Transaction: #{items.map(&:name).join(", ")}")
+        user.set_balance(user.balance - total_credits_needed, "Merch Transaction: #{items.map(&:name).join(", ")}")
         if user.balance == old_balance # transaction failed
           transaction.destroy
           halt 500, Errors::BALANCE_ERROR
         end
 
-        transaction.update(confirmed: true)
-        items.each do |item|
-          item.update(quantity: item.quantity - 1)
+        # now vend each item
+        item_successes = items.map(&:vend)
+        
+        if item_successes.all?
+          ResponseFormat.data(transaction)
+        else
+          halt 500, ResponseFormat.error("One of your items could not vend properly.")
         end
-
-        ResponseFormat.data(user)
       end
     end
   end

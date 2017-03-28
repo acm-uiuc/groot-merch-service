@@ -11,16 +11,20 @@ class Transaction
 
     property :id, Serial
     property :created_on, Date
-    property :confirmed, Boolean, default: false
     
     belongs_to :user
     has n, :items, through: Resource
+    
+    def amount
+      self.items.map(&:price).reduce(:+)
+    end
 
     def serialize
       {
         id: self.id,
         user: self.user.serialize,
         items: self.items.map(&:serialize),
+        cost: self.amount,
         created_on: self.created_on
       }
     end
