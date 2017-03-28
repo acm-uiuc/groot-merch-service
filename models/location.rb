@@ -32,6 +32,10 @@ class Location
 
       [200, nil]
     end
+
+    def pretty_location
+      "#{self.row}#{self.column}"
+    end
     
     def serialize
       item_json = (self.item.nil?) ? nil : {
@@ -45,7 +49,7 @@ class Location
         id: self.id,
         row: self.row,
         column: self.column,
-        location: "#{self.row}#{self.column}",
+        location: self.pretty_location,
         quantity: self.quantity,
         item: item_json
       }
