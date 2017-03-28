@@ -29,7 +29,7 @@ module Sinatra
         status, error = Item.validate(params, [:name, :price, :image_url, :quantity, :location])
         halt status, ResponseFormat.error(error) if error
 
-        item = Item.get(name: params[:name])
+        item = Item.first(name: params[:name])
         if item.nil?
           item = Item.new(
             name: params[:name],

@@ -24,7 +24,7 @@ class Transaction
         id: self.id,
         user: self.user.serialize,
         items: self.items.map(&:serialize),
-        cost: self.amount
+        cost: self.amount,
         created_on: self.created_on
       }
     end

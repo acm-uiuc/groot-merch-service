@@ -13,6 +13,12 @@ module Sinatra
       app.get '/merch/locations' do
         ResponseFormat.data(Location.all)
       end
+
+      app.get '/merch/locations/:location' do
+        row, column = params[:location][0], params[:location][1..-1].to_i
+        location = Location.first(row: row, column: column) || halt(404, Errors::INVALID_LOCATION)
+        ResponseFormat.data(location)
+      end
     end
   end
   register LocationsRoutes

@@ -51,8 +51,7 @@ module Sinatra
         if item_successes.all?
           ResponseFormat.data(transaction)
         else
-          # TODO this could be more elaborate, return individual items? etc.
-          halt 500, ResponseFormat.error "One of your items could not vend properly."
+          halt 500, ResponseFormat.error("One of your items could not vend properly.")
         end
       end
     end

@@ -34,13 +34,15 @@ class Location
     end
     
     def serialize
-      item_json = (self.item.nil?) ? {} : {
+      item_json = (self.item.nil?) ? nil : {
+        id: self.item.id,
         name: self.item.name,
         price: self.item.price,
         image: self.item.image
       }
       
       {
+        id: self.id,
         row: self.row,
         column: self.column,
         location: "#{self.row}#{self.column}",
