@@ -26,6 +26,35 @@ class Item
       [200, nil]
     end
 
+    def total_stock
+      self.locations.map(&:quantity).reduce(:+)
+    end
+
+    def in_stock
+       self.total_stock != 0
+    end
+
+    def vend
+      return false unless self.in_stock
+      # find first location that has some quantity available
+      location = self.locations.detect {|l| l.quantity > 0 }
+      
+      merch_access_key = Config.load_config("merch_pi")["access_key"]
+      ip_address = Config.load_config("merch_pi")["ip_address"]
+
+      # Make request to pi
+      uri = URI.parse("http://#{ip_address}/vend?item=#{location.pretty_location}")
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Post.new(uri.request_uri)
+      request['TOKEN'] = merch_access_key
+      response = http.request(request)
+
+      if response.code == "200"
+        location.quantity -= 1
+        location.save
+      end
+    end
+
     def serialize
       {
         id: self.id,
