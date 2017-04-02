@@ -11,9 +11,8 @@ Questions on how to add your app to Groot or use the Groot API:
 ## Getting Started
 
 1. Create database in mysql with: `CREATE DATABASE groot_merch_service_dev`;
-2. `cp config/database.yaml.template config/database.yaml`
-3. `cp config/secrets.yaml.template config/secrets.yaml`
-
+2. `cp config/secrets.yaml.template config/secrets.yaml`
+3. Fill in appropriate database credentials in `config/secrets.yaml`.
 
 # Routes
 ```
