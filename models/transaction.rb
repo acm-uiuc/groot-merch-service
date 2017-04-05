@@ -29,7 +29,7 @@ class Transaction
       request = Net::HTTP::Post.new(uri.request_uri)
       request['Authorization'] = merch_access_key
 
-      items_locations = self.items.map(&:vend_location)
+      item_locations = self.items.map(&:vend_location)
       request.body = {
         transaction_id: self.id,
         items: item_locations
@@ -43,7 +43,7 @@ class Transaction
           if item_json['error']
             errors += "#{item_json['location']}: #{item_json['error']}\n"
           else
-            item_idx=items_locations.index(item_json['location'])
+            item_idx = items_locations.index(item_json['location'])
             self.items[item_idx].location.quantity -= 1
             self.items[item_idx].location.save
           end
@@ -51,7 +51,7 @@ class Transaction
 
         return errors == "" ? nil : errors
       else
-        "Could not vend"
+        "The request to merch failed and could not vend the items."
       end
     end
 

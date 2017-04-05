@@ -39,18 +39,24 @@ module Sinatra
           items: items
         )
         
-        old_balance = user.balance
-        user.set_balance(user.balance - total_credits_needed, "Merch Transaction: #{items.map(&:name).join(", ")}")
-        if user.balance == old_balance # transaction failed
-          transaction.destroy
-          halt 500, Errors::BALANCE_ERROR
-        end
-
-        error_message = transaction.vend
-        unless error_message
-          ResponseFormat.data(transaction)
-        else
-          halt 500, ResponseFormat.error(error_message)
+        begin
+          error_message = transaction.vend
+          old_balance = user.balance
+          
+          unless error_message
+            user.set_balance(user.balance - total_credits_needed, "Merch Transaction: #{items.map(&:name).join(", ")}")
+            
+            if user.balance == old_balance # Transaction failed (quietly)
+              transaction.destroy
+              halt 500, Errors::BALANCE_ERROR
+            end
+            
+            ResponseFormat.data(transaction)
+          else
+            halt 500, ResponseFormat.error(error_message)
+          end
+        rescue Exception => e
+          halt 500, ResponseFormat.error(e.message)
         end
       end
     end
