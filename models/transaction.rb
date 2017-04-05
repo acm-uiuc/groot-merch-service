@@ -40,10 +40,13 @@ class Transaction
         result = JSON.parse(response.body)
         errors = ""
         result["items"].each do |item_json|
+          item_idx = items_locations.index(item_json['location'])
           if item_json['error']
             errors += "#{item_json['location']}: #{item_json['error']}\n"
+            # Remove item from transaction
+            items_except_error = self.items.reject { |i| i.vend_location.pretty_location == item_json['location'] }
+            self.update(items: items_except_error)
           else
-            item_idx = items_locations.index(item_json['location'])
             self.items[item_idx].location.quantity -= 1
             self.items[item_idx].location.save
           end

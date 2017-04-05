@@ -40,21 +40,25 @@ module Sinatra
         )
         
         begin
+          # Vending a transaction will remove items that could not be vended so that user
+          # could be billed for correct amount according to what was actually bought
           error_message = transaction.vend
-          old_balance = user.balance
           
-          unless error_message
-            user.set_balance(user.balance - total_credits_needed, "Merch Transaction: #{items.map(&:name).join(", ")}")
+          old_balance = user.balance
+          transaction_name = "Merch Transaction: #{items.map(&:name).join(", ")}"
+          user.set_balance(user.balance - transaction.amount, transaction_name)
             
-            if user.balance == old_balance # Transaction failed (quietly)
-              transaction.destroy
-              halt 500, Errors::BALANCE_ERROR
-            end
-            
-            ResponseFormat.data(transaction)
-          else
-            halt 500, ResponseFormat.error(error_message)
+          # Transaction failed (quietly)
+          if user.balance == old_balance
+            transaction.destroy
+            halt 500, Errors::BALANCE_ERROR
           end
+          
+          # Attach transaction which contains successful items only + error_message for failed items
+          response = ResponseFormat.data(transaction)
+          JSON.parse(response)['error'] = error_message
+
+          response
         rescue Exception => e
           halt 500, ResponseFormat.error(e.message)
         end
