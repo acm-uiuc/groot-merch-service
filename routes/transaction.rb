@@ -46,13 +46,11 @@ module Sinatra
           halt 500, Errors::BALANCE_ERROR
         end
 
-        # now vend each item
-        item_successes = items.map(&:vend)
-        
-        if item_successes.all?
+        error_message = transaction.vend
+        unless error_message
           ResponseFormat.data(transaction)
         else
-          halt 500, ResponseFormat.error("One of your items could not vend properly.")
+          halt 500, ResponseFormat.error(error_message)
         end
       end
     end
