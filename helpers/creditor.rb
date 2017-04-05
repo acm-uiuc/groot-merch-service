@@ -10,17 +10,14 @@ require 'uri'
 require 'pry'
 
 module Creditor
-  SERVICES_URL = 'http://localhost:8000'
   CREDITS_URL = "/credits/users/"
   CREATE_TRANSACTION = "/credits/transactions"
 
   def self.get_balance(netid)
-    groot_access_key = Config.load_config("groot")["access_key"]
-    
-    uri = URI.parse("#{SERVICES_URL}#{CREDITS_URL}#{netid}")
+    uri = URI.parse("#{Auth.services_url}#{CREDITS_URL}#{netid}")
     http = Net::HTTP.new(uri.host, uri.port)
     request = Net::HTTP::Get.new(uri.request_uri)
-    request['Authorization'] = groot_access_key
+    request['Authorization'] = Auth.groot_access_key
     
     response = http.request(request)
 
@@ -29,12 +26,10 @@ module Creditor
   end
 
   def self.update_balance(netid, new_diff, description)
-    groot_access_key = Config.load_config("groot")["access_key"]
-
-    uri = URI.parse("#{SERVICES_URL}#{CREATE_TRANSACTION}")
+    uri = URI.parse("#{Auth.services_url}#{CREATE_TRANSACTION}")
     http = Net::HTTP.new(uri.host, uri.port)
     request = Net::HTTP::Post.new(uri.request_uri)
-    request['Authorization'] = groot_access_key
+    request['Authorization'] = Auth.groot_access_key
     request['Accept'] = 'application/json'
     request['Content-Type'] = 'application/json'
     request.body = {
