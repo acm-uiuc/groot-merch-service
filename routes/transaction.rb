@@ -10,6 +10,11 @@
 module Sinatra
   module TransactionsRoutes
     def self.registered(app)
+      app.get '/merch/transactions/:id' do
+        transaction = Transaction.get(params[:id]) || halt(404, Errors::INVALID_TRANSACTION)
+        ResponseFormat.data(transaction)
+      end
+
       app.post '/merch/transactions' do
         params = ResponseFormat.get_params(request.body.read)
         status, error = User.validate(params, [:items, :pin])
@@ -38,30 +43,41 @@ module Sinatra
           user_id: user.id,
           items: items
         )
-        
-        begin
-          # Vending a transaction will remove items that could not be vended so that user
-          # could be billed for correct amount according to what was actually bought
-          error_message = transaction.vend
-          
-          old_balance = user.balance
-          transaction_name = "Merch Transaction: #{items.map(&:name).join(", ")}"
-          user.set_balance(user.balance - transaction.amount, transaction_name)
-            
-          # Transaction failed (quietly)
-          if user.balance == old_balance
-            transaction.destroy
-            halt 500, Errors::BALANCE_ERROR
-          end
-          
-          # Attach transaction which contains successful items only + error_message for failed items
-          response = ResponseFormat.data(transaction)
-          JSON.parse(response)['error'] = error_message
 
-          response
-        rescue Exception => e
-          halt 500, ResponseFormat.error(e.message)
-        end
+        # Vend in the background, client requests status of transaction
+        Thread.new {
+          begin
+            # Vending a transaction will remove items that could not be vended so that user
+            # could be billed for correct amount according to what was actually bought
+
+            # Ensure only one request to the pi at a time
+            $mutex.synchronize do
+              error_message = transaction.vend
+            end
+            user = transaction.user
+            
+            old_balance = user.balance
+            new_balance = user.balance - transaction.amount
+            # Update balance in credits service
+            user.set_balance(new_balance, transaction.name)
+              
+            if user.balance == old_balance
+              # Updating the balance failed, so entire transaction has to fail too
+              transaction.update(status: :failed)
+              transaction.set_status(JSON.parse(Errors::BALANCE_ERROR)['error'])
+            else
+              # Attach transaction which contains successful items only + error_message for failed items
+              transaction.update(status: :completed)
+              transaction.set_status(error_message)
+            end
+          rescue Exception => e
+            # For any uncaught exception, report it as failed
+            transaction.update(status: :failed)
+            transaction.set_status(e.message)
+          end
+        }
+
+        ResponseFormat.data(transaction)
       end
     end
   end

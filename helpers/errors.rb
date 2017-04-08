@@ -16,5 +16,7 @@ module Errors
   INSUFFICIENT_QUANTITY = ResponseFormat.error "Item does not have sufficient quantity"
   INVALID_PIN = ResponseFormat.error "No such user exists with that pin"
   BALANCE_ERROR = ResponseFormat.error "Error fetching balance. Please check the credits service."
-  INVALID_LOCATION = ResponseFormat.error "Invalid location specified. Valid locations are A-E for row, 1-9 for column"
+  INVALID_LOCATION = ResponseFormat.error "Invalid location specified. Valid locations are A-E for row, 1-9 
+  for column"
+  INVALID_TRANSACTION = ResponseFormat.error "Invalid transaction specified"
 end

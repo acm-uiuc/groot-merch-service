@@ -23,6 +23,7 @@ Questions on how to add your app to Groot or use the Groot API:
 /merch/users
 /merch/users/:netid
 /merch/users/pins/:pin
+/merch/transactions/:id
 
 :: POST ::
 /merch/items
