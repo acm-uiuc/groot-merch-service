@@ -7,6 +7,8 @@
 # this license in a file with the distribution.
 # encoding: UTF-8
 
+semaphore = Mutex.new
+
 module Sinatra
   module TransactionsRoutes
     def self.registered(app)
@@ -51,9 +53,9 @@ module Sinatra
             # could be billed for correct amount according to what was actually bought
 
             # Ensure only one request to the pi at a time
-            $mutex.synchronize do
+            semaphore.synchronize {
               error_message = transaction.vend
-            end
+            }
             user = transaction.user
             
             old_balance = user.balance

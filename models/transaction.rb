@@ -57,7 +57,7 @@ class Transaction
         request['Accept'] = 'application/json'
         request['Content-Type'] = 'application/json'
         request.body = {
-          transaction_id: self.id
+          transaction_id: self.id,
           items: [loc]
         }.to_json
 

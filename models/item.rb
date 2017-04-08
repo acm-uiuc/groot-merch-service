@@ -49,7 +49,7 @@ class Item
         created_on: self.created_on,
         vending: self.locations.map(&:serialize),
         in_stock: self.in_stock,
-        total_stock: self.total_stock
+        total_stock: self.total_stock || 0
       }
     end
 end

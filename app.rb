@@ -20,6 +20,7 @@ require 'dm-validations'
 require 'dm-mysql-adapter'
 require 'better_errors'
 require 'json'
+require 'thread'
 
 require_relative 'helpers/init'
 require_relative 'routes/init'
