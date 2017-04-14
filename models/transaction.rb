@@ -108,7 +108,7 @@ class Transaction
         cost: self.amount,
         created_on: self.created_on,
         status: self.status,
-        message: @status || vending_status
+        message: "#{vending_status}: #{@status}"
       }
     end
 end

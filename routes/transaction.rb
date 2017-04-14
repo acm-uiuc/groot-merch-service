@@ -7,7 +7,7 @@
 # this license in a file with the distribution.
 # encoding: UTF-8
 
-semaphore = Mutex.new
+# semaphore = Mutex.new
 
 module Sinatra
   module TransactionsRoutes
@@ -25,6 +25,7 @@ module Sinatra
         user = User.first(pin: params[:pin]) || halt(404, Errors::INVALID_PIN)
         begin
           user.balance
+          halt 500, Errors::BALANCE_ERROR unless user.balance
         rescue
           halt 500, Errors::BALANCE_ERROR
         end
@@ -53,9 +54,9 @@ module Sinatra
             # could be billed for correct amount according to what was actually bought
 
             # Ensure only one request to the pi at a time
-            semaphore.synchronize {
+            # semaphore.synchronize {
               error_message = transaction.vend
-            }
+            # }
             user = transaction.user
             
             old_balance = user.balance
@@ -75,7 +76,7 @@ module Sinatra
           rescue Exception => e
             # For any uncaught exception, report it as failed
             transaction.update(status: :failed)
-            transaction.set_status(e.message)
+            transaction.set_status("Unknown Error: #{e.message}")
           end
         }
 
