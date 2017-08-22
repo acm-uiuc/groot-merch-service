@@ -1,7 +1,7 @@
 # Copyright © 2017, ACM@UIUC
 #
-# This file is part of the Groot Project.  
-# 
+# This file is part of the Groot Project.
+#
 # The Groot Project is open source software, released under the University of
 # Illinois/NCSA Open Source License. You should have received a copy of
 # this license in a file with the distribution.
@@ -16,7 +16,7 @@ module Sinatra
 
         ResponseFormat.data(User.all)
       end
-      
+
       app.get '/merch/users/:netid' do
         status, error = User.validate(params, [:netid])
         halt status, ResponseFormat.error(error) if error
@@ -32,9 +32,9 @@ module Sinatra
         begin
           user.balance
         rescue
-          puts "An error fetching credits"
+          puts 'An error fetching credits'
         ensure
-          return ResponseFormat.data(user)
+          ResponseFormat.data(user)
         end
       end
 
@@ -47,9 +47,9 @@ module Sinatra
         begin
           user.balance
         rescue
-          puts "An error fetching credits"
+          puts 'An error fetching credits'
         ensure
-          return ResponseFormat.data(user)
+          ResponseFormat.data(user)
         end
       end
     end
