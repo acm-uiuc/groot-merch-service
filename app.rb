@@ -44,6 +44,8 @@ class GrootMerchService < Sinatra::Base
 
   configure :development do
     enable :unsecure
+    register Sinatra::Reloader
+
     DataMapper::Logger.new($stdout, :debug)
     use BetterErrors::Middleware
 
