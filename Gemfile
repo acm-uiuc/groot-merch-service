@@ -18,9 +18,11 @@ gem 'dm-validations'
 gem 'foreigner'
 gem 'json'
 gem 'rake'
+gem 'rufus-scheduler'
 gem 'sinatra', '~> 1.4.7'
 gem 'sinatra-contrib'
 gem 'sinatra-cross_origin', '~> 0.3.1'
+gem 'tzinfo-data'
 
 group :production do
   gem 'dm-mysql-adapter'
