@@ -32,10 +32,9 @@ module Sinatra
         begin
           user.balance
         rescue
-          puts 'An error fetching credits'
-        ensure
-          ResponseFormat.data(user)
+          logger.error 'An error fetching credits'
         end
+        ResponseFormat.data(user)
       end
 
       app.post '/merch/users/pins' do
@@ -47,10 +46,9 @@ module Sinatra
         begin
           user.balance
         rescue
-          puts 'An error fetching credits'
-        ensure
-          ResponseFormat.data(user)
+          logger.error 'An error fetching credits'
         end
+        ResponseFormat.data(user)
       end
     end
   end
