@@ -19,10 +19,12 @@ require 'dm-validations'
 require 'dm-mysql-adapter'
 require 'better_errors'
 require 'json'
+require 'rufus-scheduler'
 
 require_relative 'helpers/init'
 require_relative 'routes/init'
 require_relative 'models/init'
+require_relative 'lib/jobs'
 
 class GrootMerchService < Sinatra::Base
   register Sinatra::AuthsRoutes
@@ -63,5 +65,12 @@ class GrootMerchService < Sinatra::Base
     disable :unsecure
   end
 
+  configure do
+    scheduler = Rufus::Scheduler.new
+    jobs = Jobs.new
+    scheduler.every '8h' do
+      jobs.restock
+    end
+  end
   DataMapper.finalize
 end

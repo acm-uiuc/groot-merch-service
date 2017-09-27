@@ -27,3 +27,6 @@ Metrics/CyclomaticComplexity:
 
 Metrics/PerceivedComplexity:
   Max: 12
+
+Lint/RescueWithoutErrorClass:
+  Enabled: false

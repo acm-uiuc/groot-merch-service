@@ -30,7 +30,7 @@ RSpec.shared_examples 'invalid parameters' do |parameters, url, method|
   end
 
   parameters.each do |key|
-    it 'should not create the model and return an error when #{key} is missing' do
+    it "should not create the model and return an error when #{key} is missing" do
       old_value = payload.delete(key)
 
       if method == 'post'
@@ -41,7 +41,7 @@ RSpec.shared_examples 'invalid parameters' do |parameters, url, method|
 
       expect(last_response).not_to be_ok
       json_data = JSON.parse(last_response.body)
-      expect(json_data['error']).to eq 'Missing #{key}'
+      expect(json_data['error']).to eq "Missing #{key}"
 
       payload[key] = old_value
     end
